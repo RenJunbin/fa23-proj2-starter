@@ -10,9 +10,9 @@
 # =================================================================
 abs:
     # Prologue
-
+		blt zero, a0, done
     # PASTE HERE
-
+		sub a0, x0, a0
     # Epilogue
-
-    jr ra
+done:
+    ret
