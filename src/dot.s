@@ -37,20 +37,21 @@ init:
 		mv t2, zero
 		mv t3, zero
 		mv t4, zero
+        
+        slli t5, a3, 2
+        slli t6, a4, 2
 loop_start:
 		addi t0, t0, 1				# t0 is loop index, t0 is 0 initially.
 		bge t0, a2, loop_end		# if (t0 >= a2) goto loop_end
 loop_continue:
 	# load a0[t0 * a3 * 4] and a1[t0 * a4 * 4] to t1, t2
-		mul t1, t0, a3
-		slli t1, t1, 2
-		mul t2, t0, a4
-		slli t2, t2, 2
+		mul t1, t0, t5
+		mul t2, t0, t6
 
-		add a0, a0, t1
-		add a1, a1, t2
-		lw t1, 0(a0)
-		lw t2, 0(a1)
+		add t1, a0, t1
+		add t2, a1, t2
+		lw t1, 0(t1)
+		lw t2, 0(t2)
 
 	# t3 = t1 * t2
 		mul t3, t1, t2
