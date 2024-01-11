@@ -17,7 +17,7 @@ relu:
     addi t0, zero, 1
     bge a1, t0, loop_start
     li a0, 36
-    j loop_end
+    j exit
 loop_start:
     addi a1, a1, -1
     blt a1, zero, loop_end
