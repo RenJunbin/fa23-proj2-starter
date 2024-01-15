@@ -59,7 +59,17 @@ class TestAbsLoss(unittest.TestCase):
         t.check_scalar("a0", 619)
         # generate the `assembly/TestAbsLoss_test_simple.s` file and run it through venus
         t.execute()
-
+    def test_length_0(self):
+        t = AssemblyTest(self, "../coverage-src/abs_loss.s")
+        array0 = t.array([])
+        t.input_array("a0",array0)
+        array1 = t.array([])
+        t.input_array("a1",array1)
+        t.input_scalar("a2",len(array0))
+        result = t.array([])
+        t.input_array("a3",result)
+        t.call("abs_loss")
+        t.execute(code=36)
     # Add other test cases if necessary
 
     @classmethod
@@ -110,8 +120,45 @@ class TestSquaredLoss(unittest.TestCase):
         # check that the register a0 contains the correct output
         t.check_scalar("a0", 201027)
         # generate the `assembly/TestSquaredLoss_test_simple.s` file and run it through venus
-        # TODO
-
+    def test_length_0(self):
+        t = AssemblyTest(self, "../coverage-src/squared_loss.s")
+        array0 = t.array([])
+        t.input_array("a0",array0)
+        array1 = t.array([])
+        t.input_array("a1",array1)
+        t.input_scalar("a2",len(array0))
+        result = t.array([])
+        t.input_array("a3",result)
+        t.call("squared_loss")
+        t.execute(code=36)
+    
+    def test_positive(self):
+        t = AssemblyTest(self, "../coverage-src/squared_loss.s")
+        array0 = t.array([1,2,3])
+        t.input_array("a0",array0)
+        array1 = t.array([3,4,5])
+        t.input_array("a1",array1)
+        t.input_scalar("a2",len(array0))
+        result = t.array([-1,-1,-1])
+        t.input_array("a3",result)
+        t.call("squared_loss")
+        t.check_scalar("a0", 12)
+        t.check_array(result, [4,4,4])
+        t.execute()
+    
+    def test_negative(self):
+        t = AssemblyTest(self, "../coverage-src/squared_loss.s")
+        array0 = t.array([-1,-2,-3])
+        t.input_array("a0",array0)
+        array1 = t.array([-3,-4,-5])
+        t.input_array("a1",array1)
+        t.input_scalar("a2",len(array0))
+        result = t.array([-1,-1,-1])
+        t.input_array("a3",result)
+        t.call("squared_loss")
+        t.check_scalar("a0", 12)
+        t.check_array(result, [4,4,4])
+        t.execute()
     # Add other test cases if neccesary
 
     @classmethod
@@ -160,8 +207,17 @@ class TestZeroOneLoss(unittest.TestCase):
         # check that the result array contains the correct output
         t.check_array(result, [0, 0, 0, 0, 0, 1, 0, 0, 0])
         # generate the `assembly/TestZeroOneLoss_test_simple.s` file and run it through venus
-        # TODO
-
+    def test_length_0(self):
+        t = AssemblyTest(self, "../coverage-src/zero_one_loss.s")
+        array0 = t.array([])
+        t.input_array("a0",array0)
+        array1 = t.array([])
+        t.input_array("a1",array1)
+        t.input_scalar("a2",len(array0))
+        result = t.array([])
+        t.input_array("a3",result)
+        t.call("zero_one_loss")
+        t.execute(code=36)
     # Add other test cases if neccesary
 
     @classmethod
@@ -196,6 +252,24 @@ class TestInitializeZero(unittest.TestCase):
         t.call("initialize_zero")
         # check that the register a0 contains the correct array (hint: look at the check_array_pointer function in framework.py)
         t.check_array_pointer("a0", [0, 0, 0, 0, 0, 0, 0, 0, 0])
+        t.execute()
+    def test_length_0(self):
+        t = AssemblyTest(self, "../coverage-src/initialize_zero.s")
+        t.input_scalar("a0", 0)
+        t.call("initialize_zero")
+        t.execute(code=36)
+    
+    def test_length_inf(self):
+        t = AssemblyTest(self, "../coverage-src/initialize_zero.s")
+        t.input_scalar("a0", 2**30)
+        t.call("initialize_zero")
+        t.execute(code=26)
+
+    def test_length_1(self):
+        t = AssemblyTest(self, "../coverage-src/initialize_zero.s")
+        t.input_scalar("a0", 1)
+        t.call("initialize_zero")
+        t.check_array_pointer("a0", [0])
         t.execute()
 
     # Add other test cases if neccesary
