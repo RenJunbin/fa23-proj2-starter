@@ -7,14 +7,12 @@
         {
             "type": "venus",
             "request": "launch",
-            "name": "Launch with all views",
+            "name": "Launch current file with all options",
             "program": "${file}",
+            "cwd": "${fileDirname}",
             "stopOnEntry": true,
             "stopAtBreakpoints": true,
-            "ledMatrixSize": {
-                "x": 10,
-                "y": 10
-            }
+
         }
     ]
 }
