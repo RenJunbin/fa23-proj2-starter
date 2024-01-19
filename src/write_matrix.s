@@ -52,9 +52,10 @@ call_fwrite_1:
     li a2, 2
     li a3, 4
     jal fwrite
-    li t0, 1
+    li t0, 2
     lw s2, 0(sp)
     lw s3, 0(sp)
+    addi sp, sp, 8
     bne a0, t0, fwrite_error
 
 call_fwrite_2:
