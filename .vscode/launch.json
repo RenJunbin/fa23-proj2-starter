@@ -9,7 +9,6 @@
             "request": "launch",
             "name": "Launch current file with all options",
             "program": "${file}",
-            "cwd": "${fileDirname}",
             "stopOnEntry": true,
             "stopAtBreakpoints": true,
 
