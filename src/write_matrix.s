@@ -25,134 +25,62 @@
 write_matrix:
 
     # Prologue
+    addi sp, sp, -20
+    sw ra, 0(sp)
+    sw s0, 4(sp)
+    sw s1, 8(sp)
+    sw s2, 12(sp)
+    sw s3, 16(sp)
+
+    mv s1, a1
+    mv s2, a2
+    mv s3, a3
 
 call_fopen:
-    addi sp, sp, -20
-    sw a1, 0(sp)
-    sw a2, 4(sp)
-    sw a3, 8(sp)
-    sw ra, 12(sp)
-    
-    addi a1, zero, 1
-    call fopen
+    li a1, 1
+    jal fopen
+    li t0, -1
+    beq a0, t0, fopen_error
 
-    mv t0, a0
-    
-    lw a1, 0(sp)
-    lw a2, 4(sp)
-    lw a3, 8(sp)
-    lw ra, 12(sp)
-    addi sp, sp, 16
+    mv s0, a0
 
-    bge a0, zero, first_call_fwrite
-    li a0, 27
-    j exit
-
-first_call_fwrite:
-    addi sp, sp, -24
-    sw a2, 0(sp)
-    sw a3, 4(sp)
-    sw ra, 8(sp)
-    sw t0, 12(sp)
-    sw a1, 16(sp)
-
+call_fwrite_1:
+    addi sp, sp, -8
+    sw s3, 4(sp)
+    sw s2, 0(sp)
     mv a1, sp
     li a2, 2
     li a3, 4
-    mv t1, a2
-    sw t1, 20(sp)
+    jal fwrite
+    li t0, 1
+    lw s2, 0(sp)
+    lw s3, 0(sp)
+    bne a0, t0, fwrite_error
 
-    call fwrite
-
-    lw a2, 0(sp)
-    lw a3, 4(sp)
-    lw ra, 8(sp)
-    lw t0, 12(sp)
-    lw a1, 16(sp)
-    lw t1, 20(sp)
-    addi sp, sp, 24
-
-    beq a0, t1, call_fflush
-    li a0, 30
-    j exit
-
-call_fflush:
-    addi sp, sp, -20
-    sw a2, 0(sp)
-    sw a3, 4(sp)
-    sw ra, 8(sp)
-    sw a1, 12(sp)
-    sw t0, 16(sp)
-
-    mv a0, t0
-    call fflush
-
-    lw a2, 0(sp)
-    lw a3, 4(sp)
-    lw ra, 8(sp)
-    lw a1, 12(sp)
-    lw t0, 16(sp)
-    addi sp, sp, 20
-    beq a0, zero, next_call_fwrite
-
-next_call_fwrite:
-    addi sp, sp, -20
-    sw a2, 0(sp)
-    sw a3, 4(sp)
-    sw ra, 8(sp)
-    sw a1, 12(sp)
-    
-    mv a0, t0
+call_fwrite_2:
+    mv a0, s0
+    mv a1, s1
+    mv a2, s2
+    mv a3, s3
     mul a2, a2, a3
-    slli a2, a2, 2
-    mv t1, a2
-    sw t1, 16(sp)
     li a3, 4
-    call fwrite
-
-    lw a2, 0(sp)
-    lw a3, 4(sp)
-    lw ra, 8(sp)
-    lw a1, 12(sp)
-    lw t1, 16(sp)
-    addi sp, sp, 20
-
-    beq a0, t1, next_call_fflush
-    li a0, 30
-    j exit
-
-next_call_fflush:
-    addi sp, sp, -20
-    sw a2, 0(sp)
-    sw a3, 4(sp)
-    sw ra, 8(sp)
-    sw a1, 12(sp)
-    sw t0, 16(sp)
-
-    mv a0, t0
-    call fflush
-
-    lw a2, 0(sp)
-    lw a3, 4(sp)
-    lw ra, 8(sp)
-    lw a1, 12(sp)
-    lw t0, 16(sp)
-    addi sp, sp, 20
-    beq a0, zero, call_fclose
+    jal fwrite
+    mv t0, s2
+    mul t0, s2, s3
+    bne a0, t0, fwrite_error
 
 call_fclose:
-    mv a0, t0
-    addi sp, sp, -4
-    sw ra, 0(sp)
-    call fclose
+    mv a0, s0
+    jal fclose
+    bne a0, zero, fclose_error
+
     lw ra, 0(sp)
-    addi sp, sp, 4
+    lw s0, 4(sp)
+    lw s1, 8(sp)
+    lw s2, 12(sp)
+    lw s3, 16(sp)
 
-    beq a0, zero, _end
-    li a0, 28
-    j exit  
-
-_end:
+    addi sp, sp, 20
     # Epilogue
 
     jr ra
@@ -165,6 +93,6 @@ fwrite_error:
     li a0, 30
     j exit
 
-wclose_error:
+fclose_error:
     li a0, 28
     j exit
