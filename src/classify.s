@@ -94,8 +94,7 @@ classify:
     jal malloc
 
     mv s4, a0
-    li t0, 0
-    beq a0, t0, error_malloc
+    beq a0, zero, error_malloc
 
     mv a0, s0
     lw a1, m0_0

@@ -26,7 +26,6 @@
 matmul:
 
     # Error checks
-        ebreak
 		li t0, 1
 		blt a1, t0, ret38
 		blt a2, t0, ret38
@@ -36,14 +35,15 @@ matmul:
 
 		bne a2, a4, ret38
 		
-		j outer_loop_start
+		j init
 ret38:
 		li a0, 38
 		j exit
     # Prologue
 
 init:
-		addi sp, sp, -32
+		addi sp, sp, -36
+		sw s7, 32(sp)
 		sw s6, 28(sp)
 		sw s5, 24(sp)
 		sw s4, 20(sp)
@@ -51,11 +51,13 @@ init:
 		sw s2, 12(sp)
 		sw s1, 8(sp)
 		sw s0, 4(sp)
+		sw sp, 0(sp)
 
 		mv s1, zero				# i = 0
 outer_loop_start:
 		bge s1, a1, ret		# if (i >= a1) goto ret
 		mul s0, s1, a2
+		slli s0, s0, 2
 		add s0, s0, a0
 		mv s5, zero
 inner_loop_start:
@@ -63,9 +65,10 @@ inner_loop_start:
 
 		mul s6, s1, a5
 		add s6, s6, s5
+		slli s6, s6, 2
 		add s6, s6, a6
-
-		add s3, a3, s5
+		slli s7, s5, 2
+		add s3, a3, s7
 call_dot:
 		addi sp, sp, -32
 		sw a6, 28(sp)
@@ -75,24 +78,25 @@ call_dot:
 		sw a2, 12(sp)
 		sw a1, 8(sp)
 		sw a0, 4(sp)
-		sw sp, 0(sp)
+		sw ra, 0(sp)
 
 		mv a0, s0
 		mv a1, s3
 		li a3, 1
+		mv a4, a5
 
-		call dot
+		jal dot
 
-	    mv t6, a0
+	  mv t6, a0
 
 		lw ra, 0(sp)    
-	    lw a0, 4(sp)    
-	    lw a1, 8(sp)    
-	    lw a2, 12(sp)    
-	    lw a3, 16(sp)    
-	    lw a4, 20(sp)    
-	    lw a5, 24(sp)    
-	    lw a6, 28(sp)
+	  lw a0, 4(sp)    
+	  lw a1, 8(sp)    
+	  lw a2, 12(sp)    
+	  lw a3, 16(sp)    
+	  lw a4, 20(sp)    
+	  lw a5, 24(sp)    
+	  lw a6, 28(sp)
 
 		addi sp, sp, 32    
 		
@@ -107,14 +111,14 @@ outer_loop_end:
     # Epilogue
 ret:
 		lw sp, 0(sp)
-	    lw s0, 4(sp)   
-	    lw s1, 8(sp)  
-	    lw s2, 12(sp) 
-	    lw s3, 16(sp) 
-	    lw s4, 20(sp) 
-	    lw s5, 24(sp) 
-	    lw s6, 28(sp)
-	
-		addi sp, sp, 32 
+	  lw s0, 4(sp)   
+	  lw s1, 8(sp)  
+	  lw s2, 12(sp) 
+	  lw s3, 16(sp) 
+	  lw s4, 20(sp) 
+	  lw s5, 24(sp) 
+	  lw s6, 28(sp)
+	  lw s7, 32(sp)
+	addi sp, sp, 36
 		
 		jr ra
