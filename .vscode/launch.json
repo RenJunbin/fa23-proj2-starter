@@ -9,6 +9,7 @@
             "request": "launch",
             "name": "Launch current file with all options",
             "program": "${file}",
+            "args": ["../tests/classify-1/m0.bin", "../tests/classify-1/m1.bin", "../tests/classify-1/input.bin" ,"../tests/classify-1/output.bin"],
             "stopOnEntry": true,
             "stopAtBreakpoints": true,
 
